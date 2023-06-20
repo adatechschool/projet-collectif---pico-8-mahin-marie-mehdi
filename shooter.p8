@@ -2,9 +2,11 @@ pico-8 cartridge // http://www.pico-8.com
 version 38
 __lua__
 function _init()
-		p={x=20,y=60,speed=4}
-		bullets={}	
+	p={x=20,y=60,speed=4}
+	bullets={}	
  	position = p.x
+	create_stars()
+	create_asteroids()
 end
 
 function _update60()
@@ -17,13 +19,23 @@ function _update60()
 	if (btn(⬇️)) p.y+=1
 	-- bullet function --
 	if (btnp(❎)) shoot()
-	update_bullets()	
+	update_bullets()
+	update_stars()
+	update_asteroids()	
 
 end
 
 function _draw()
 	cls()
+		-- afficher etoiles --
+	for s in all(stars) do
+		pset(s.x,s.y,s.col)
+	end
 	map()
+		-- afficher asteroides --
+	for a in all(asteroids) do
+		spr(a.style,a.x,a.y)
+	end
 		-- bullets --
 	for i in all(bullets) do
 		spr(3,i.x,i.y)
@@ -53,6 +65,67 @@ function update_bullets()
 		i.x+=i.speed
 	end
 end
+
+-->8
+--background
+
+function create_stars()
+	stars={}
+	for i=1,20 do
+	new_star = {
+		x = rnd(128),
+		y = rnd(128),
+		col = rnd({15,6,13}),
+		speed = 1+rnd(1)
+	}
+	add(stars,new_star)
+	end
+	for i=1,8 do
+	new_star = {
+		x = rnd(128),
+		y = rnd(128),
+		col = 1,
+		speed = 0.5+rnd(0.5)
+	}
+	add(stars,new_star)
+	end
+	end
+	
+	function update_stars()
+	for s in all(stars) do
+		s.x-=s.speed
+		if s.x<0 then
+			s.x=128
+			s.y=rnd(128)
+		end
+	end
+	end
+-->8
+--asteroid
+	
+	function create_asteroids()
+	asteroids={}
+	for i=1,3 do
+	new_asteroid = {
+		x = rnd({136,144, 162}),
+		y = rnd(120),
+		style = rnd({6,7,8}),
+		speed = 0.5
+	}
+	add(asteroids,new_asteroid)
+	end
+	end
+	function update_asteroids()
+	for a in all(asteroids) do
+		a.x-=a.speed
+		if a.x<-8 then
+			a.x=rnd({136,144, 162})
+			a.y=rnd(120)
+			style = rnd({6,7,8})
+		end
+	end
+	end
+
 __gfx__
 0000000006bb000009999990000000000000000080899a7000066600000000000000000000000000000000000000000000000000000000000000000000000000
 000000000033333000aaaa9002c3a98000600000000000000066656000066000000566000000feee222999eeeee0000008000000000000000000000000000000
