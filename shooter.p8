@@ -6,7 +6,7 @@ function _init()
 	bullets={}	
  	position = p.x
 	create_stars()
-	create_asteroids()
+	create_asteroids(3)
 end
 
 function _update60()
@@ -63,6 +63,9 @@ end
 function update_bullets()
 	for i in all(bullets) do
 		i.x+=i.speed
+		if i.x > 129 then
+			del(bullets,i)
+		end
 	end
 end
 
@@ -103,9 +106,9 @@ function create_stars()
 -->8
 --asteroid
 	
-	function create_asteroids()
+	function create_asteroids(nombre)
 	asteroids={}
-	for i=1,3 do
+	for i=1,nombre do
 	new_asteroid = {
 		x = rnd({136,144, 162}),
 		y = rnd(120),
@@ -115,13 +118,13 @@ function create_stars()
 	add(asteroids,new_asteroid)
 	end
 	end
+	
 	function update_asteroids()
 	for a in all(asteroids) do
 		a.x-=a.speed
-		if a.x<-8 then
-			a.x=rnd({136,144, 162})
-			a.y=rnd(120)
-			style = rnd({6,7,8})
+		if a.x<-8 then 
+			del(asteroids,a)
+			create_asteroids(3)
 		end
 	end
 	end
