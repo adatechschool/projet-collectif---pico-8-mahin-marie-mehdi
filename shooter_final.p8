@@ -5,6 +5,8 @@ __lua__
 
 function _init()
 	create_player()
+	e={x=130,y=60,life=4}
+	postillons={}
 	bullets={}	
 	position = p.x
 	create_stars()
@@ -144,12 +146,22 @@ end
 function update_game()
 	-- update position player --
 	position = p.x
-	update_asteroids()	
+	player_movement()
 	-- bullet function --
 	if (btnp(❎)) shoot()
 	update_bullets()
+	-- stars --
 	update_stars()	
-	player_movement()
+	-- asteroides --
+	update_asteroids()	
+	-- ennemy --
+	update_enemies()	
+	--shoot_enemy function
+	if e.x==110 and #postillons<2
+	then
+	shoot_enemy()
+	end
+	update_postillons()
 end
 
 -- update game over
@@ -167,27 +179,36 @@ end
 
 function draw_game()
 	cls()
-		-- afficher etoiles --
+	draw_map()
+		-- affichage player --
+	draw_player()
+
+		-- affichage etoiles --
 	for s in all(stars) do
 		pset(s.x,s.y,s.col)
 	end
 	
-		-- afficher asteroides --
+		-- affichage asteroides --
 	for a in all(asteroids) do
 		spr(a.style,a.x,a.y)
 	end
 	
-		-- bullets --
+		-- affichage bullets --
 	for i in all(bullets) do
 		spr(3,i.x,i.y)
 	end
 	
-		draw_map()
-  draw_player()
-	
-	-- affichage reacteurs --
+		-- affichage reacteurs --
 	if p.x > position 
 		then spr(5,p.x-8,p.y)	
+	end
+
+		-- afichage ennemi --
+	spr(2,e.x,e.y)
+
+		-- affichage postillons --
+	for pt in all(postillons) do
+	spr(4,pt.x-8,pt.y)
 	end
 end
 -->8
@@ -202,6 +223,40 @@ function collision(a,b)
 	else 
 		return true
 	end
+end
+
+-->8
+--enemies
+
+function update_enemies()
+	if e.x>110 then 
+		e.x-=1
+	end
+end
+
+-->8
+--bullets enemy
+
+function shoot_enemy()
+	new_postillon={
+	x=e.x,
+	y=e.y,
+	speed=2
+	}
+	add(postillons,new_postillon)
+	sfx(0)
+end
+
+function update_postillons()
+	for pt in all(postillons) do
+	pt.x-=pt.speed
+		if pt.x<-100 then 
+  pt.x=e.x
+  pt.y=e.y
+		end
+	end
+	
+	
 end
 __gfx__
 0000000006bb000009999990000000000000000008089a7000066600000000000000000000000000000000000000000000000000000000000000000000000000
