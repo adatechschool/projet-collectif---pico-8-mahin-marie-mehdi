@@ -2,16 +2,28 @@ pico-8 cartridge // http://www.pico-8.com
 version 38
 __lua__
 function _init()
-	p={x=20,y=60,speed=4}
+	p={x=20,y=60,speed=4,life=3}
 	bullets={}	
  	position = p.x
 	create_stars()
 	create_asteroids(3)
+	game_over=0
 end
 
-function _update60()
+function _update()
+	if(game_over==0) update_game()
+	if(game_over==1) update_game_over()
+end
+	
+function _draw()
+	if(game_over==0) draw_game()
+	if(game_over==1) draw_game_over()
+end
+
+function update_game()
 	-- update position player --
 	position = p.x
+	update_asteroids()	
 	-- move player --
 	if (btn(➡️)) p.x+=1
 	if (btn(⬅️)) p.x-=1 
@@ -21,11 +33,10 @@ function _update60()
 	if (btnp(❎)) shoot()
 	update_bullets()
 	update_stars()
-	update_asteroids()	
-
+	
 end
 
-function _draw()
+function draw_game()
 	cls()
 		-- afficher etoiles --
 	for s in all(stars) do
@@ -127,8 +138,40 @@ function create_stars()
 			create_asteroids(3)
 		end
 	end
+	for a in all(asteroids) do
+		if collision(p,a) then
+			p.life-=0.0625
+			if p.life==0 then
+				game_over=1
+			end
+		end
+	end
 	end
 
+-->8
+--collision asteroid joueur
+
+function collision(a,b)
+	if a.y+8 < b.y
+	or a.y   > b.y + 8
+	or a.x+8 < b.x
+	or a.x   > b.x + 8 then 
+		return false
+	else 
+		return true
+	end
+end
+-->8
+--gameover
+
+function update_game_over()
+
+end
+
+function draw_game_over()
+	cls()
+	print("game over",45,60,7)
+end
 __gfx__
 0000000006bb000009999990000000000000000080899a7000066600000000000000000000000000000000000000000000000000000000000000000000000000
 000000000033333000aaaa9002c3a98000600000000000000066656000066000000566000000feee222999eeeee0000008000000000000000000000000000000
