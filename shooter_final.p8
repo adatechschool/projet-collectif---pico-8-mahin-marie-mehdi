@@ -5,7 +5,7 @@ __lua__
 
 function _init()
 	create_player()
-	e={x=130,y=60,life=4}
+	e={x=130,y=60,life=10}
 	postillons={}
 	bullets={}	
 	position = p.x
@@ -237,7 +237,7 @@ function draw_game()
 			spr(37,i*8,0)
 		end
 		-- affichage vie trump --
-		print(e.life.."/4",112,2,7)
+		print(e.life.."/10",108,2,7)
 		-- affichage bullets --
 	for i in all(bullets) do
 		spr(3,i.x,i.y)
@@ -397,7 +397,7 @@ function update_explosions()
 		circ(x,y,rayon,couleur)
 		
 		for e in all(explosions) do
-			circ(e.x,e.y,e.timer/3,
+			circ(e.x,e.y,e.timer/2,
 								8+e.timer%3)
 		end
 end
