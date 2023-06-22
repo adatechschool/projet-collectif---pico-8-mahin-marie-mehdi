@@ -11,17 +11,19 @@ function _init()
 	position = p.x
 	create_stars()
 	create_asteroids(3)
-	game_over=0
+	status=0
 end
 
 function _update60()
- if(game_over==0) update_game()
-	if(game_over==1) update_game_over()
+ if(status==0) update_game()
+	if(status==1) update_game_over()
+	if(status==2) update_victory()
 end
 
 function _draw()
-	if(game_over==0) draw_game()
-	if(game_over==1) draw_game_over()
+	if(status==0) draw_game()
+	if(status==1) draw_game_over()
+	if(status==2) draw_victory()
 end
 -->8
 --bullets
@@ -42,6 +44,14 @@ function update_bullets()
 		i.x+=i.speed
 		if i.x > 129 then
 			del(bullets,i)
+		end
+	end
+	for i in all(bullets) do
+		if collision(e,i) then
+			e.life-=0.0625
+			if e.life==0 then
+				status=2
+			end
 		end
 	end
 end
@@ -109,7 +119,7 @@ function create_asteroids(nombre)
 		if collision(p,a) then
 			p.life-=0.0625
 			if p.life==0 then
-				game_over=1
+				status=1
 			end
 		end
 	end
@@ -161,7 +171,7 @@ function update_game()
 	then
 	shoot_enemy()
 	end
-	update_postillons()
+	update_postillons()	
 end
 
 -- update game over
@@ -174,20 +184,29 @@ function draw_game_over()
 	cls()
 	print("game over",45,60,7)
 end
+
+function update_victory()
+
+end
+
+function draw_victory()
+	cls()
+	print("you won !",45,60,7)
+end 
 -->8
 -- draw game
 
 function draw_game()
 	cls()
-	draw_map()
-		-- affichage player --
-	draw_player()
-
-		-- affichage etoiles --
+			-- affichage etoiles --
 	for s in all(stars) do
 		pset(s.x,s.y,s.col)
 	end
 	
+	draw_map()
+		-- affichage player --
+	draw_player()
+
 		-- affichage asteroides --
 	for a in all(asteroids) do
 		spr(a.style,a.x,a.y)
@@ -212,7 +231,7 @@ function draw_game()
 	end
 end
 -->8
--- collision
+-- collisions
 
 function collision(a,b)
 	if a.y+8 < b.y
@@ -241,10 +260,10 @@ function shoot_enemy()
 	new_postillon={
 	x=e.x,
 	y=e.y,
-	speed=2
+	speed=0.5
 	}
 	add(postillons,new_postillon)
-	sfx(0)
+	sfx(4)
 end
 
 function update_postillons()
@@ -254,9 +273,18 @@ function update_postillons()
   pt.x=e.x
   pt.y=e.y
 		end
+		if pt.x < 0 then
+			del(postillons,pt)
+			end
 	end
-	
-	
+	for pt in all(postillons) do
+		if collision(p,pt) then
+			p.life-=0.0625
+			if p.life==0 then
+				status=1
+			end
+		end
+	end
 end
 __gfx__
 0000000006bb000009999990000000000000000008089a7000066600000000000000000000000000000000000000000000000000000000000000000000000000
