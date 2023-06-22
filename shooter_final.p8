@@ -13,6 +13,7 @@ function _init()
 	create_asteroids(6)
 	status=0
 	position_trump=0
+	explosions={}
 end
 
 function _update60()
@@ -51,6 +52,7 @@ function update_bullets()
 		if collision(e,i) then
 		 del(bullets,i)
 			e.life-=1
+			create_explosions(i.x+8,i.y)
 			if e.life==0 then
 				status=2
 			end
@@ -193,7 +195,8 @@ function update_game()
 	then
 	shoot_enemy()
 	end
-	update_postillons()	
+	update_postillons()
+	update_explosions()	
 end
 
 -- update game over
@@ -261,6 +264,10 @@ function draw_game()
 	for pt in all(postillons) do
 	spr(4,pt.x-8,pt.y)
 	end
+	
+	-- affichage explosions
+	draw_explosions()
+	
 end
 -->8
 -- collisions
@@ -359,11 +366,40 @@ function update_postillons()
 		if collision(p,pt) then
 		 del(postillons,pt)
 			p.life-=1
+			create_explosions(pt.x,pt.y)
 			if p.life==0 then
 				status=1
 			end
 		end
 	end
+end
+-->8
+--explosions
+-- explosions
+
+function create_explosions(x,y)
+	sfx(6)
+	add(explosions,{x=x,
+																	y=y,
+																 timer=0})
+end
+
+function update_explosions()
+	for e in all(explosions) do
+		e.timer+=1
+		if e.timer==13 then
+			del(explosions,e)
+			end
+		end
+	end
+	
+	function draw_explosions()
+		circ(x,y,rayon,couleur)
+		
+		for e in all(explosions) do
+			circ(e.x,e.y,e.timer/3,
+								8+e.timer%3)
+		end
 end
 __gfx__
 0000000006bb000009999990000000000000000008089a7000066600000000000000000000000000000000000000000000000000000000000000000000000000
@@ -427,6 +463,7 @@ __sfx__
 0010000034550345503455033550315502f5502c5502a55027550255502355021550205501d5501b5501a550155501a5501b5501d5501d5501f5502255025550285502a5502d5502f55030550315503255032550
 000200000735008350083500835008350063500435000350003500f3000f3000e3000d3000b300073000530003300013000030007300023000130000300023000b30000300003000030000300003000130000300
 001000000060004650026500065007600056000360002600016000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600
+00010000196501d6501f65024650226501b65018650146501d60017600316003160032600336003360034600346003460002600346003460034600346003360032600316002e6002a60026600206001c60011600
 __music__
 00 01424344
 00 41424344
