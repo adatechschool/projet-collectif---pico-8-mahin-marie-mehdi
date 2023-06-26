@@ -4,29 +4,25 @@ __lua__
 -- mahin mehdi marie project --
 
 function _init()
-	create_player()
-	maxlife_boss=20
-	e={x=130,y=60,life=maxlife_boss}
-	postillons={}
-	bullets={}	
-	position = p.x
-	create_stars()
-	create_asteroids(6)
-	status=0
-	position_trump=0
-	explosions={}
+	init_start()
 end
 
 function _update60()
+ if(status==-1) update_start()
  if(status==0) update_game()
 	if(status==1) update_game_over()
 	if(status==2) update_victory()
+	if(status==3) update_story()
+	
+	
 end
 
 function _draw()
+ if(status==-1) draw_start()
 	if(status==0) draw_game()
 	if(status==1) draw_game_over()
 	if(status==2) draw_victory()
+	if(status==3) draw_story()
 end
 -->8
 --bullets
@@ -183,7 +179,7 @@ function update_game()
 	position = p.x
 	player_movement()
 	-- bullet function --
-	if (btnp(❎)) shoot()
+	if (btnp(4)) shoot()
 	update_bullets()
 	-- stars --
 	update_stars()	
@@ -203,12 +199,15 @@ end
 -- update game over
 
 function update_game_over()
-
+ if (btnp(❎)) then
+  init_game()
+ end
 end
 
 function draw_game_over()
 	cls()
-	print("game over",45,60,7)
+	print("game over",45,50,7)
+	print("press ❎ to retry",30,72,7)
 end
 
 function update_victory()
@@ -402,6 +401,108 @@ function update_explosions()
 								8+e.timer%3)
 		end
 end
+-->8
+--ecran d'accueil
+
+function init_start()
+ cls()
+ status=-1
+ create_stars()
+end
+
+
+-------------------------------
+-- mise a jour ecran accueil --
+-------------------------------
+
+function update_start()
+
+ update_stars()
+ 
+ if (btnp(❎)) then
+	init_game()
+ end
+ 
+ 
+ if (btnp(🅾️)) then
+ init_story()
+ end
+ 
+end
+
+
+function draw_start()
+	cls()
+	for s in all(stars) do
+		pset(s.x,s.y,s.col)
+	end
+	print("❎ : jouer",
+        45, 68, 7)
+ print("🅾️ : intro",
+        45, 75, 7)
+ pset(49,77,7)
+end
+-->8
+-- init_game
+
+function init_game()
+	create_player()
+	maxlife_boss=20
+	e={x=130,y=60,life=maxlife_boss}
+	postillons={}
+	bullets={}	
+	position = p.x
+	create_stars()
+	create_asteroids(6)
+	status=0
+	position_trump=0
+	explosions={}
+end
+-->8
+-- init_story
+
+function init_story()
+	cls()
+	status=3
+	create_stars()
+
+end
+
+function update_story()
+
+ update_stars()
+ 
+ if (btnp(❎)) then
+  init_game()
+ end
+ 
+ 
+-- if (btnp(5)) then
+--  init_start()
+-- end
+end
+
+
+function draw_story()
+	cls()
+	for s in all(stars) do
+		pset(s.x,s.y,s.col)
+	end
+	print("❎ : jouer",
+       50, 100, 7)
+-- print("🅾️ : menu",
+--        80, 120, 7)
+ pset(49,77,7)
+ print("dans un passe pas si lointain",10,10)
+ print("un certain donald",34,20)
+ print("prit le controle de l'empire.",10,30)
+ print("vous etes le dernier espoir",12,50)
+ print("pour renverser l'oppresseur",12,60)
+ print("et retablir l'egalite...",20,70)
+ 
+end
+-->8
+--level 2--
 __gfx__
 0000000006bb000009999990000000000000000008089a7000066600000000000000000000000000000000000000000000000000000000000000000000000000
 000000000033333000aaaa9002c3a98000600000000000000066656000066000000566000000feee222999eeeee0000008000000000000000000000000000000
