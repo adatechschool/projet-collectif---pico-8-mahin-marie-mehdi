@@ -9,12 +9,11 @@ end
 
 function _update60()
  if(status==-1) update_start()
- if(status==0) update_game()
+ if(status==0 or status==5) update_game()
 	if(status==1) update_game_over()
 	if(status==2) update_victory()
 	if(status==3) update_story()
-	
-	
+	if(status==4) update_story_2()
 end
 
 function _draw()
@@ -232,11 +231,15 @@ function draw_game_over()
 		pset(s.x,s.y,s.col)
 	end
 	print("game over",45,50,7)
-	print("press ❎ to retry",30,72,7)
+	print("appuyer sur ❎ pour recommencer",5,72,7)
 end
 
 function update_victory()
  update_stars()
+ if btn(❎) then 
+ 	status=4
+ 	init_game()
+ end
 end
 
 function draw_victory()
@@ -269,7 +272,9 @@ function draw_victory()
 	print("i",75,30,8)
 	print("r",85,30,4)
 	print("e",95,30,2)
-	print("l'humanite a gagne",27,60,7)
+	print("l'humanite a gagne",27,60,6)
+	
+	print("appuyer sur ❎ pour continuer",7,90,7)
 end 
 
 
@@ -502,7 +507,7 @@ end
 
 function init_game()
 	create_player()
-	maxlife_boss=100
+	maxlife_boss=1
 	e={x=130,y=60,life=maxlife_boss}
 	asteroids={}
 	postillons={}
