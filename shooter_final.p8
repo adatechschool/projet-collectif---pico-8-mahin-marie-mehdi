@@ -5,7 +5,8 @@ __lua__
 
 function _init()
 	create_player()
-	e={x=130,y=60,life=10}
+	maxlife_boss=20
+	e={x=130,y=60,life=maxlife_boss}
 	postillons={}
 	bullets={}	
 	position = p.x
@@ -237,7 +238,7 @@ function draw_game()
 			spr(37,i*8,0)
 		end
 		-- affichage vie trump --
-		print(e.life.."/10",108,2,7)
+		print(e.life.."/"..maxlife_boss,108,2,7)
 		-- affichage bullets --
 	for i in all(bullets) do
 		spr(3,i.x,i.y)
