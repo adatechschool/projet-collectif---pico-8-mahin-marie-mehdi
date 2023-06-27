@@ -18,10 +18,11 @@ end
 
 function _draw()
  if(status==-1) draw_start()
-	if(status==0) draw_game()
+	if(status==0 or status==5) draw_game()
 	if(status==1) draw_game_over()
 	if(status==2) draw_victory()
 	if(status==3) draw_story()
+	if(status==4) draw_story_2()
 end
 -->8
 --bullets
@@ -47,14 +48,16 @@ function update_bullets()
 		end
 	end
 	for i in all(bullets) do
-		if collision(e,i) then
+		for e in all(enemy) do
+			if collision(e,i) then
 		 del(bullets,i)
 			e.life-=1
 			create_explosions(i.x+8,i.y)
-			if e.life==0 then
-				status=2
+				if e.life==0 then
+					status=2
+				end
 			end
-		end
+	end
 		if collide_map(i,"right",0) then
 			del(bullets,i)
 		end
@@ -99,16 +102,40 @@ function update_stars()
 --asteroid
 	
 function create_asteroids(nombre)
-		for i=1,nombre do
-			new_asteroid = {
+	if nombre==1 then
+		new_asteroid = {
 				x = rnd({130, 136, 142}),
 				y = rnd(120),
 				style = rnd({6,7,8}),
 				speed = 0.5
 			}
 			add(asteroids,new_asteroid)
-		end
 	end
+		
+			if nombre>1 then
+				for i=1,5 do
+					new_asteroid = {
+						x = rnd({130, 140, 160}),
+						y = rnd(120),
+						style = rnd({6,7,8}),
+						speed = 0.5
+					}
+					add(asteroids,new_asteroid)
+				end
+			end
+			
+		if nombre>5 then
+			for i=1,nombre-5 do
+				new_asteroid = {
+					x = rnd({150, 170, 190}),
+					y = rnd(120),
+					style = rnd({6,7,8}),
+					speed = 0.5
+				}
+				add(asteroids,new_asteroid)
+			end
+		end
+end
 	
 
 	function update_asteroids()
@@ -148,7 +175,10 @@ end
 -->8
 -- player 
 function create_player()
-	p={x=10,y=30,sprite=1,life=3,h=8,w=8}
+	p={x=10,y=30,sprite=1,life=5,h=8,w=8}
+	if status==5 then
+		p.life=10
+	end
 end
 
 function draw_player()
@@ -158,10 +188,12 @@ end
 function player_movement()
  
  collide_map(p,aim,0)
- 
- if collision(e,p) then
- 	sfx(8)
- 	status=1
+
+	for e in all (enemy) do
+	 if collision(e,p) then
+	 	sfx(8)
+	 	status=1
+	 end
  end
  
 	if (btn(➡️)) 
@@ -190,30 +222,33 @@ end
 -- update game
 
 function update_game()
--- stars --
+	-- stars --
 	update_stars()	
-if btn(🅾️) then
-	cmd=1
-end
-if cmd==1 then
-	-- update position player --
-	position = p.x
-	player_movement()
-	-- bullet function --
-	if (btnp(4)) shoot()
-	update_bullets()
-	-- asteroides --
-	update_asteroids()	
-	-- ennemy --
-	update_enemies()	
-	--shoot_enemy function
-	if e.x==110 and #postillons<1
-	then
-	shoot_enemy()
+	if btn(🅾️) then
+		cmd=1
 	end
+		
+	if cmd==1 then
+		-- update position player --
+		position = p.x
+		player_movement()
+		-- bullet function --
+		if (btnp(4)) shoot()
+			update_bullets()
+		end
+		-- asteroides --
+		update_asteroids()	
+		-- ennemy --
+		update_enemies()	
+		--shoot_enemy function
+		for e in all(enemy) do
+			if e.x==110 and #postillons<1
+			then
+				shoot_enemy(e)
+			end
+	end		
 	update_postillons()
 	update_explosions()
-	end	
 end
 
 -- update game over
@@ -238,7 +273,7 @@ function update_victory()
  update_stars()
  if btn(❎) then 
  	status=4
- 	init_game()
+ 	init_story_2()
  end
 end
 
@@ -297,7 +332,9 @@ function draw_game()
 			spr(37,i*8,0)
 		end
 		-- affichage vie trump --
-		print(e.life.."/"..maxlife_boss,108,2,7)
+		for e in all(enemy) do
+			print(e.life.."/"..maxlife_boss,108,2,7)
+		end
 		-- affichage bullets --
 	for i in all(bullets) do
 		spr(3,i.x,i.y)
@@ -316,13 +353,18 @@ function draw_game()
 	end
 
 		-- afichage ennemi --
-	spr(2,e.x,e.y)
-	
-		-- affichage reacteurs trump --
-	spr(19,e.x,e.y+8)	
+	for e in all(enemy) do
+		spr(2,e.x,e.y)
+	end
+			-- affichage reacteurs trump --
+	for e in all(enemy) do
+		spr(19,e.x,e.y+8)	
+ end
 		-- affichage postillons --
-	for pt in all(postillons) do
-	spr(4,pt.x-8,pt.y)
+	for e in all(enemy) do
+		for pt in all(postillons) do
+		spr(4,pt.x-8,pt.y)
+		end
 	end
 	
 	-- affichage explosions
@@ -384,42 +426,62 @@ end
 -->8
 --enemies
 
-function update_enemies()
-	if e.x>110 then 
-		e.x-=1
+function create_enemies()
+		new_e={x=130,y=60,
+				life=maxlife_boss,position_trump=0}
+		add(enemy,new_e)
+	if status==5 then
+			new_e_2={x=130,y=30,
+				life=maxlife_boss,position_trump=0}
+		add(enemy,new_e_2)
+			new_e_3={x=130,y=85,
+				life=maxlife_boss,position_trump=0}
+		add(enemy,new_e_3)
 	end
-	if e.x==110 then
-			position_trump+=1
-			
-			if position_trump==15 then
-			e.y+=3
-			end
-			if position_trump==30 then
-			e.y-=3
-			position_trump=0
-			end
+end
+
+function update_enemies()
+	for e in all(enemy) do
+		if e.x>110 then 
+			e.x-=1
+		end
+		
+		if e.x==110 then
+			e.position_trump+=1
+				
+				if e.position_trump==15 then
+				e.y+=3
+				end
+				
+				if e.position_trump==30 then
+				e.y-=3
+				e.position_trump=0
+				end
+		end
 	end
 end
 
 -->8
 --bullets enemy
 
-function shoot_enemy()
-	new_postillon={
-	x=e.x,
-	y=e.y,
-	speed=0.5
-	}
-	add(postillons,new_postillon)
-	sfx(4)
+function shoot_enemy(e)
+		new_postillon={
+		x=e.x,
+		y=e.y,
+		speed=0.5
+		}
+		add(postillons,new_postillon)
+		sfx(4)
 end
 
 function update_postillons()
-	for pt in all(postillons) do
-	pt.x-=pt.speed
-		if pt.x<-10 then 
-  pt.x=e.x
-  pt.y=e.y
+	for e in all(enemy) do
+		for pt in all(postillons) do
+			pt.x-=pt.speed
+			if pt.x<-10 then 
+				pt.x=e.x
+				pt.y=e.y
+			end
 		end
 	end
 	for pt in all(postillons) do
@@ -449,11 +511,11 @@ function update_explosions()
 		e.timer+=1
 		if e.timer==13 then
 			del(explosions,e)
-			end
 		end
 	end
+end
 	
-	function draw_explosions()
+function draw_explosions()
 		circ(x,y,rayon,couleur)
 		
 		for e in all(explosions) do
@@ -507,16 +569,24 @@ end
 
 function init_game()
 	create_player()
-	maxlife_boss=1
-	e={x=130,y=60,life=maxlife_boss}
+	if status==5 then
+		maxlife_boss=50
+	else
+		maxlife_boss=1
+	end
+	enemy={}
+	create_enemies()
 	asteroids={}
 	postillons={}
 	bullets={}	
 	position = p.x
 	create_stars()
-	create_asteroids(10)
+	if status==5 then
+	 create_asteroids(8)
+	else
+		create_asteroids(10)
+	end
 	status=0
-	position_trump=0
 	explosions={}
 end
 -->8
@@ -553,14 +623,44 @@ function draw_story()
        50, 100, 7)
 -- print("🅾️ : menu",
 --        80, 120, 7)
- pset(49,77,7)
  print("dans un passe pas si lointain",10,10)
  print("un certain donald",34,20)
  print("prit le controle de l'empire.",10,30)
- print("vous etes le dernier espoir",12,50)
+ print("tu es le dernier espoir",20,50)
  print("pour renverser l'oppresseur",12,60)
  print("et retablir l'egalite...",20,70)
  
+end
+
+-- init story 2
+
+function init_story_2()
+	cls()
+	status=4
+	create_stars()
+end
+
+function update_story_2()
+	 update_stars()
+ if (btnp(🅾️)) then
+ 		status=5
+			init_game()
+ end
+end
+
+function draw_story_2()
+		cls()
+	for s in all(stars) do
+		pset(s.x,s.y,s.col)
+	end
+	print("🅾️ : passer au niveau 2",
+       20, 120, 7)
+ print("tu n'as gagne qu'une bataille",8,10)
+ print("il te faut gagner la guerre",12,20)
+ print("",10,30)
+ print("des groupuscules subsistent",15,50)
+ print("a toi de terminer le travail",13,60)
+ print("bon chance.",45,90)
 end
 -->8
 --level 2--
@@ -582,13 +682,13 @@ __gfx__
 000000000000000000000000000000000000000000099a700000000000000000000000000000feee222999000000000000000000000000000000000000000000
 00000000000000000a00700a00800080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000666666660000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-000000006dddddd10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-000000006d1111d10000000000000000000000000008080000080800000808000000000000000000000000000000000000000000000000000000000000000000
-000000006d1dd6d10000000000000000000000000087888000878880008788800000000000000000000000000000000000000000000000000000000000000000
-000000006d1dd6d10000000000000000000000000088888000888880008888800000000000000000000000000000000000000000000000000000000000000000
-000000006d1666d10000000000000000000000000008880000088800000888000000000000000000000000000000000000000000000000000000000000000000
-000000006dddddd10000000000000000000000000000800000008000000080000000000000000000000000000000000000000000000000000000000000000000
-00000000111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000006dddddd10000000000000000000000000007070000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000006d1111d10000000000000000000000000078787000080800000808000000000000000000000000000000000000000000000000000000000000000000
+000000006d1dd6d10000000000000000000000000788888700878880008788800000000000000000000000000000000000000000000000000000000000000000
+000000006d1dd6d10000000000000000000000000787888700888880008888800000000000000000000000000000000000000000000000000000000000000000
+000000006d1666d10000000000000000000000000078887000088800000888000000000000000000000000000000000000000000000000000000000000000000
+000000006dddddd10000000000000000000000000007870000008000000080000000000000000000000000000000000000000000000000000000000000000000
+00000000111111110000000000000000000000000000700000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000a070000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000099aa0000000000000000000000000000000000000000000000000000
