@@ -267,6 +267,7 @@ end
 function update_game_over()
 	update_stars()
  if (btnp(❎)) then
+  status=0
   init_game()
  end
 end
