@@ -246,8 +246,8 @@ function update_game()
 			then
 				shoot_enemy(e)
 			end
+			update_postillons()
 	end		
-	update_postillons()
 	update_explosions()
 end
 
@@ -470,30 +470,27 @@ function shoot_enemy(e)
 		y=e.y,
 		speed=0.5
 		}
-		add(postillons,new_postillon)
 		sfx(4)
+		add(postillons,new_postillon)
 end
 
 function update_postillons()
-	for e in all(enemy) do
 		for pt in all(postillons) do
 			pt.x-=pt.speed
 			if pt.x<-10 then 
-				pt.x=e.x
-				pt.y=e.y
+				del(postillons,pt)
 			end
 		end
-	end
-	for pt in all(postillons) do
-		if collision(p,pt) then
-		 del(postillons,pt)
-			p.life-=1
-			create_explosions(pt.x,pt.y)
-			if p.life==0 then
-				status=1
+		for pt in all(postillons) do
+			if collision(p,pt) then
+			 del(postillons,pt)
+				p.life-=1
+				create_explosions(pt.x,pt.y)
+				if p.life==0 then
+					status=1
+				end
 			end
 		end
-	end
 end
 -->8
 --explosions
