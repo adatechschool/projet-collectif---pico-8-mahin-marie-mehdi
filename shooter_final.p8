@@ -118,7 +118,7 @@ function create_asteroids(nombre)
 				x = rnd({130, 136, 142}),
 				y = rnd(120),
 				style = rnd({6,7,8}),
-				speed = 0.5
+				speed = rnd({0.5,1,1.5})
 			}
 			add(asteroids,new_asteroid)
 	end
@@ -129,7 +129,7 @@ function create_asteroids(nombre)
 						x = rnd({130, 140, 160}),
 						y = rnd(120),
 						style = rnd({6,7,8}),
-						speed = 0.5
+						speed = rnd({0.5,1,1.5})
 					}
 					add(asteroids,new_asteroid)
 				end
@@ -141,7 +141,7 @@ function create_asteroids(nombre)
 					x = rnd({150, 170, 190}),
 					y = rnd(120),
 					style = rnd({6,7,8}),
-					speed = 0.5
+					speed = rnd({0.5,1,1.5})
 				}
 				add(asteroids,new_asteroid)
 			end
@@ -187,9 +187,6 @@ end
 -- player 
 function create_player()
 	p={x=10,y=30,sprite=1,life=5,h=8,w=8}
-	if status==5 then
-		p.life=10
-	end
 end
 
 function draw_player()
@@ -396,6 +393,7 @@ function draw_game()
 	if cmd!=1 then
 	print("appuyer sur c pour tirer", 20,50,7)
 	end
+	if cmd==1 then
 		-- affichage vie player --
 		for i=0,p.life-1 do
 			spr(37,i*8,0)
@@ -438,7 +436,7 @@ function draw_game()
 	
 	-- affichage explosions
 	draw_explosions()
-	
+	end
 end
 -->8
 -- collisions
@@ -611,7 +609,6 @@ function update_start()
  status=0
 	init_game()
  end
- 
  
  if (btnp(🅾️)) then
  status=3
