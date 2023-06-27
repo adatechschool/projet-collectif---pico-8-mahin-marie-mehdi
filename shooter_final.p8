@@ -14,6 +14,7 @@ function _update60()
 	if(status==2) update_victory()
 	if(status==3) update_story()
 	if(status==4) update_story_2()
+	if(status==6) update_victory_2()
 end
 
 function _draw()
@@ -23,6 +24,7 @@ function _draw()
 	if(status==2) draw_victory()
 	if(status==3) draw_story()
 	if(status==4) draw_story_2()
+	if(status==6) draw_victory_2()
 end
 -->8
 --bullets
@@ -47,20 +49,29 @@ function update_bullets()
 			del(bullets,i)
 		end
 	end
+
 	for i in all(bullets) do
 		for e in all(enemy) do
 			if collision(e,i) then
-		 del(bullets,i)
-			e.life-=1
-			create_explosions(i.x+8,i.y)
+				del(bullets,i)
+				e.life-=1
+				create_explosions(i.x+8,i.y)
 				if e.life==0 then
-					status=2
+					del(enemy,e)
 				end
 			end
-	end
+		end
 		if collide_map(i,"right",0) then
 			del(bullets,i)
 		end
+	end
+	if count(enemy)==0 and status==5 then
+		init_victory_2()
+		status=6
+	end
+	if count(enemy)==0 and status==0 then
+		init_victory()
+		status=2
 	end
 end
 
@@ -266,7 +277,13 @@ function draw_game_over()
 		pset(s.x,s.y,s.col)
 	end
 	print("game over",45,50,7)
-	print("appuyer sur ❎ pour recommencer",5,72,7)
+	print("❎: recommencer",35,110,7)
+end
+
+function init_victory()
+	cls()
+	status=2
+	create_stars()
 end
 
 function update_victory()
@@ -307,9 +324,60 @@ function draw_victory()
 	print("i",75,30,8)
 	print("r",85,30,4)
 	print("e",95,30,2)
-	print("l'humanite a gagne",27,60,6)
+	print("ce n'est que le debut...",15,60,6)
 	
-	print("appuyer sur ❎ pour continuer",7,90,7)
+	print("❎: continuer",35,110,7)
+end 
+
+-- victoire finale
+
+function init_victory_2()
+	cls()
+	status=6
+	create_stars()
+end
+
+function update_victory_2()
+ update_stars()
+ if btn(❎) then 
+ 	status=-1
+ 	init_start()
+ end
+end
+
+function draw_victory_2()
+	cls()
+	for s in all(stars) do
+		pset(s.x,s.y,s.col)
+	end
+	spr(66,0,0)
+	for i=1,14 do
+	spr(67,i*8,0)
+	end
+	spr(68,120,0)
+	for i=1,14 do
+	spr(84,120,i*8)
+	end
+	spr(100,120,120)
+	for i=1,14 do
+	spr(99,i*8,120)
+	end
+	spr(98,0,120)
+	for i=1,14 do
+	spr(82,0,i*8)
+	end
+	
+	print("v",25,30,2)
+	print("i",35,30,12)
+	print("c",45,30,11)
+	print("t",55,30,10)
+	print("o",65,30,9)
+	print("i",75,30,8)
+	print("r",85,30,4)
+	print("e",95,30,2)
+	print("felicitations",35,60,6)
+	print("tu as vaincu le male",22,70,6)
+	print("❎: menu principal",28,110,7)
 end 
 
 
@@ -332,9 +400,9 @@ function draw_game()
 			spr(37,i*8,0)
 		end
 		-- affichage vie trump --
-		for e in all(enemy) do
-			print(e.life.."/"..maxlife_boss,108,2,7)
-		end
+			for i=1,count(enemy) do
+				print(enemy[i].life.."/"..maxlife_boss,108,2+9*(i-1),7)
+			end
 		-- affichage bullets --
 	for i in all(bullets) do
 		spr(3,i.x,i.y)
@@ -539,11 +607,13 @@ function update_start()
  update_stars()
  
  if (btnp(❎)) then
+ status=0
 	init_game()
  end
  
  
  if (btnp(🅾️)) then
+ status=3
  init_story()
  end
  
@@ -559,7 +629,6 @@ function draw_start()
         45, 68, 7)
  print("🅾️ : intro",
         45, 75, 7)
- pset(49,77,7)
 end
 -->8
 -- init_game
@@ -567,9 +636,9 @@ end
 function init_game()
 	create_player()
 	if status==5 then
-		maxlife_boss=50
+		maxlife_boss=15
 	else
-		maxlife_boss=1
+		maxlife_boss=30
 	end
 	enemy={}
 	create_enemies()
@@ -583,7 +652,6 @@ function init_game()
 	else
 		create_asteroids(10)
 	end
-	status=0
 	explosions={}
 end
 -->8
@@ -597,17 +665,11 @@ function init_story()
 end
 
 function update_story()
-
  update_stars()
- 
- if (btnp(❎)) then
-  init_game()
- end
- 
- 
--- if (btnp(5)) then
---  init_start()
--- end
+ if (btnp(❎)) then 
+ 	init_game()	
+ 	status=0
+	end
 end
 
 
@@ -650,8 +712,8 @@ function draw_story_2()
 	for s in all(stars) do
 		pset(s.x,s.y,s.col)
 	end
-	print("🅾️ : passer au niveau 2",
-       20, 120, 7)
+	print("🅾️: niveau 2",
+       43, 110, 7)
  print("tu n'as gagne qu'une bataille",8,10)
  print("il te faut gagner la guerre",12,20)
  print("",10,30)
