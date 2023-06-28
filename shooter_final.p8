@@ -180,6 +180,25 @@ end
 		end
 	end
 	end
+	
+	-- comete
+	
+function create_comet()
+		comet = {
+				x = 400,
+				y = rnd(112),
+				speed = rnd({0.5,1,1.5})
+			}
+end
+	
+
+	function update_comet()
+		comet.x-=comet.speed
+		if comet.x<-40 then 
+			comet.x=400
+			comet.y=rnd(112)
+		end
+	end
 -->8
 -- map --
 
@@ -251,6 +270,8 @@ function update_game()
 		end
 		-- asteroides --
 		update_asteroids()	
+		-- comet --
+		if (status==5) update_comet()
 		-- ennemy --
 		update_enemies()	
 		--shoot_enemy function
@@ -393,7 +414,8 @@ function draw_game()
 	for s in all(stars) do
 		pset(s.x,s.y,s.col)
 	end
-	
+	-- affichage comete --
+		sspr(72,0,32,16,comet.x,comet.y)
 	draw_map()
 	if cmd!=1 then
 	print("appuyer sur c pour tirer", 20,50,7)
@@ -419,7 +441,7 @@ function draw_game()
 	for a in all(asteroids) do
 		spr(a.style,a.x,a.y)
 	end
-	
+		
 		-- affichage reacteurs --
 	if p.x > position 
 		then spr(5,p.x-8,p.y)	
@@ -666,6 +688,7 @@ function init_game()
 		create_asteroids(10)
 	end
 	explosions={}
+	create_comet()
 end
 -->8
 -- init_story
