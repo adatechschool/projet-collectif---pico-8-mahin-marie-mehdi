@@ -9,7 +9,12 @@ end
 
 function _update60()
  if(status==-1) update_start()
- if(status==0 or status==5) update_game()
+ if(status==0 or status==5) then
+ 	if (cmd==1 or btnp(🅾️)) then 
+ 		update_game()
+ 		cmd=1
+ 	end
+ end
 	if(status==1) update_game_over()
 	if(status==2) update_victory()
 	if(status==3) update_story()
@@ -392,6 +397,7 @@ function draw_game()
 	draw_map()
 	if cmd!=1 then
 	print("appuyer sur c pour tirer", 20,50,7)
+	print("et commencer a jouer", 30,60,7)
 	end
 	if cmd==1 then
 		-- affichage vie player --
