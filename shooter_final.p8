@@ -271,7 +271,10 @@ function update_game()
 		-- asteroides --
 		update_asteroids()	
 		-- comet --
-		if (status==5) update_comet()
+		if (status==5) then
+			update_comet()
+			update_duck()
+		end
 		-- ennemy --
 		update_enemies()	
 		--shoot_enemy function
@@ -465,6 +468,8 @@ function draw_game()
 	-- affichage explosions
 	draw_explosions()
 	end
+	-- affichage duck --
+	if (status==5) spr(57,duck.x,duck.y)
 end
 -->8
 -- collisions
@@ -684,6 +689,8 @@ function init_game()
 	create_stars()
 	if status==5 then
 	 create_asteroids(8)
+	 create_duck()
+	 compteur_duck=0
 	else
 		create_asteroids(10)
 	end
@@ -758,7 +765,38 @@ function draw_story_2()
  print("bon chance.",45,90)
 end
 -->8
---level 2--
+--canard--
+
+function create_duck()
+duck={x=64,y=64,speed=1}
+end
+
+function update_duck()
+rnd_move=flr(rnd(4))
+if (compteur_duck==4 and rnd_move==0 and duck.x<128)
+ then duck.x+=duck.speed
+ 					compteur_duck=0
+end
+if (compteur_duck==4 and rnd_move==1 and duck.x>0)
+ then duck.x-=duck.speed
+ 					compteur_duck=0
+end
+if (compteur_duck==4 and rnd_move==2 and duck.y<128)
+ then duck.y+=duck.speed
+  					compteur_duck=0
+end
+if (compteur_duck==4 and rnd_move==3 and duck.y>0)
+ then duck.y-=duck.speed
+  					compteur_duck=0
+end
+if collision(p,duck) and p.life<5 then
+	p.life+=1
+	duck.x=rnd(128)
+	duck.y=rnd(128)
+end
+compteur_duck+=1
+end
+
 __gfx__
 0000000006bb000009999990000000000000000008089a7000066600000000000000000000000000000000000000000000000000000000000000000000000000
 000000000033333000aaaa9002c3a98000600000000000000066656000066000000566000000feee222999eeeee0000008000000000000000000000000000000
@@ -926,7 +964,7 @@ __sfx__
 001000002e44629436264262942626446224161d4462243626426224261d4262242626426224261d4262242626426224261d4262242626426224261d4262242626426224261d4262242626426224261d42622426
 001000002e2222e2222e2122e21229222292122622226222262122621226212262122621226212262122621226212262122621226212262122621226212262122621226212262122621226212262122621226215
 __music__
-01 10421244
+00 10421244
 00 10111244
 00 13141244
 00 16181715
