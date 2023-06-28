@@ -592,6 +592,7 @@ end
 
 function init_start()
  cls()
+ music(0,0,0)
  status=-1
  create_stars()
 end
@@ -632,6 +633,7 @@ end
 -- init_game
 
 function init_game()
+ music(-1,0,0)
 	create_player()
 	if status==5 then
 		maxlife_boss=15
