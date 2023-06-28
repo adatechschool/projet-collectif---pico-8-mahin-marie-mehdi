@@ -678,9 +678,9 @@ function init_game()
  music(-1,0,0)
 	create_player()
 	if status==5 then
-		maxlife_boss=1
+		maxlife_boss=15
 	else
-		maxlife_boss=1
+		maxlife_boss=30
 	end
 	enemy={}
 	create_enemies()
