@@ -423,8 +423,10 @@ function draw_game()
 		sspr(72,0,32,16,comet.x,comet.y)
 	draw_map()
 	if cmd!=1 then
-	print("appuyer sur c pour tirer", 20,50,7)
-	print("et commencer a jouer", 30,60,7)
+	print("utiliser les fleches",28,50,7)
+	print("pour vous deplacer",32,60,7)
+	print("appuyer sur c pour tirer", 20,70,7)
+	print("et commencer a jouer", 30,80,7)
 	end
 	if cmd==1 then
 		-- affichage vie player --
@@ -680,7 +682,7 @@ function init_game()
 	if status==5 then
 		maxlife_boss=15
 	else
-		maxlife_boss=20
+		maxlife_boss=30
 	end
 	enemy={}
 	create_enemies()
