@@ -680,7 +680,7 @@ function init_game()
 	if status==5 then
 		maxlife_boss=15
 	else
-		maxlife_boss=30
+		maxlife_boss=20
 	end
 	enemy={}
 	create_enemies()
